@@ -1,27 +1,33 @@
 # $NetBSD: Makefile,v 1.10 2015/04/08 14:58:25 makoto Exp $
 
-DISTNAME=		mule-p20151011
-#                                 mule-p20151011 -> mule11-20151011
-PKGNAME=		${DISTNAME:C/e-p/e11-/}
+MULEVERSION=		1.1
+SNAPSHOTDATE=		20170408
+DISTNAME=		${GITHUB_PROJECT}
+PKGNAME=		mule11-${MULEVERSION}pl${SNAPSHOTDATE}
+CATEGORIES=		editors
 MASTER_SITES=		${MASTER_SITE_GITHUB:=tsutsui/}
 GITHUB_PROJECT=		mule1.1-netbsd
-CATEGORIES=		editors
+GITHUB_TAG=		${SNAPSHOTDATE}
 
 MAINTAINER=		makoto@ki.nu
 HOMEPAGE=		https://github.com/tsutsui/mule1.1-netbsd
 COMMENT=		Classical Mule (MULtilingual Enhancement of GNU Emacs), based on 18.59
-LICENSE=		gnu-gpl-v1
+#unexelf.c is pulled from emacs22
+LICENSE=		gnu-gpl-v1 AND gnu-gpl-v2
+
+CONFLICTS=		emacs19-[0-9]* emacs2[0-9]-[0-9]*
+
 MAKE_JOBS_SAFE=		no
 
-WRKSRC=			${WRKDIR}/${GITHUB_PROJECT}-p${PKGVERSION_NOREV}
-USE_TOOLS=		gmake
+WRKSRC=			${WRKDIR}/${GITHUB_PROJECT}-${SNAPSHOTDATE}
+USE_TOOLS=		gmake pax
 
 # this chunk should be before SUBST_CLASSES= pref
 SUBST_CLASSES+=		path
-SUBST_MESSAGE.path=	Adjust PATH (VARBASE and PKGVERSION)
+SUBST_MESSAGE.path=	Convert mule LIBDIR path
 SUBST_STAGE.path=	pre-configure
-SUBST_FILES.path=	src/paths.h-dist
-SUBST_VARS.path=	VARBASE PKGNAME
+SUBST_VARS.path=	PREFIX VARBASE MULEVERSION
+SUBST_FILES.path=	Makefile src/paths.h-dist
 
 SUBST_CLASSES+=		pref
 SUBST_MESSAGE.pref=	Convert /usr/local to ${PREFIX}
@@ -30,8 +36,6 @@ SUBST_SED.pref=		-e 's,/usr/local,${PREFIX},g'
 SUBST_FILES.pref=	\
 	Makefile \
 	build-install \
-	dos/emx/makefile \
-	dos/go32/makefile \
 	etc/FAQ \
 	etc/FAQ.jp \
 	etc/MACHINES \
@@ -49,43 +53,47 @@ SUBST_FILES.pref=	\
 	src/mconfig.h-dist \
 	src/mconfig.h-netbsd \
 	src/paths.h-dist \
-	src/ymakefile \
+	src/ymakefile
 
-SUBST_CLASSES+=		dest
-SUBST_MESSAGE.dest=	Support to DESTDIR (and disables INSTALLFLAGS)
-SUBST_STAGE.dest=	pre-configure
-SUBST_FILES.dest=	Makefile
-SUBST_SED.dest=		-e 's,$${BINDIR},$$\{DESTDIR\}$$\{BINDIR\},g'
-SUBST_SED.dest+=	-e 's,$${LIBDIR},$$\{DESTDIR\}$$\{LIBDIR\},g'
-SUBST_SED.dest+=	-e 's,$${MANDIR},$$\{DESTDIR\}$$\{PKGMANDIR\},g'
-SUBST_SED.dest+=	-e 's,^INSTALLFLAGS,\#INSTALLFLAGS,'
-
-# src/xemacs
-#SPECIAL_PERMS=
+SUBST_CLASSES+=		x11
+SUBST_MESSAGE.x11=	Convert /usr/X11R7 to ${X11BASE}
+SUBST_STAGE.x11=	pre-configure
+SUBST_SED.x11=		-e 's,/usr/X11R7,${X11BASE},g'
+SUBST_FILES.x11=	src/s-netbsd.h
 
 REPLACE_PERL=		etc/faq2texi.perl
 
 # build PATH in the dumped emacs may not be a problem
 CHECK_WRKREF_SKIP+=     bin/mule
 
+INSTALLATION_DIRS+=	bin ${PKGMANDIR}/man1 share/mule/${MULEVERSION}
+MAKE_DIRS+=		${VARBASE}/lock ${VARBASE}/lock/mule
+MAKE_DIRS_PERMS+=	${VARBASE}/lock/mule \
+			${REAL_ROOT_USER} ${REAL_ROOT_GROUP} 1777
+BUILD_DEFS+=		VARBASE
+
 .include	"../../mk/bsd.prefs.mk"
 
-pre-configure:
-# OPSYS may returns x86_64, but mule wants its name as amd64
-# so copy its name beforehand
+do-configure:
 	(cd ${WRKSRC}; \
-	${CP} src/config.h-${LOWER_OPSYS}_amd64  \
-	      src/config.h-${LOWER_OPSYS}_x86_64; \
-	${CP} src/config.h-${LOWER_OPSYS}_${MACHINE_ARCH}  \
-	      src/config.h || \
 	${CP} src/config.h-${LOWER_OPSYS}  \
 	      src/config.h ; \
 	${CP} src/mconfig.h-${LOWER_OPSYS} src/mconfig.h; \
+	${SED} -e 's,^;(load "japanese"),(load "japanese"),g' \
+		< lisp/mule-init.el > lisp/site-init.el; \
 	)
 
-# To avoid after patch, original file is installed
-pre-install:
-	(cd ${WRKSRC} ; ${RM} lisp/mule-init.el.orig )
+do-install:
+	cd ${WRKSRC} && \
+		pax -rwpp -s '/.*\.orig//' etc info lisp \
+	${DESTDIR}${PREFIX}/share/mule/${MULEVERSION}
+	${INSTALL_PROGRAM} ${WRKSRC}/etc/ctags ${DESTDIR}${PREFIX}/bin
+	${INSTALL_PROGRAM} ${WRKSRC}/etc/emacsclient ${DESTDIR}${PREFIX}/bin
+	${INSTALL_PROGRAM} ${WRKSRC}/etc/etags ${DESTDIR}${PREFIX}/bin
+	${INSTALL_PROGRAM} ${WRKSRC}/etc/m2ps ${DESTDIR}${PREFIX}/bin
+	${INSTALL_PROGRAM} ${WRKSRC}/src/xemacs ${DESTDIR}${PREFIX}/bin/mule
+	${INSTALL_MAN} ${WRKSRC}/etc/mule.1 ${DESTDIR}${PREFIX}/${PKGMANDIR}/man1
+	${INSTALL_MAN} ${WRKSRC}/etc/m2ps.1 ${DESTDIR}${PREFIX}/${PKGMANDIR}/man1
 
 .include "options.mk"
 
