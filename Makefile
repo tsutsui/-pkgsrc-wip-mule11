@@ -1,6 +1,7 @@
 # $NetBSD: Makefile,v 1.10 2015/04/08 14:58:25 makoto Exp $
 
 MULEVERSION=		1.1
+EMACSVERSION=		18.59
 SNAPSHOTDATE=		20170408
 DISTNAME=		${GITHUB_PROJECT}
 PKGNAME=		mule11-${MULEVERSION}pl${SNAPSHOTDATE}
@@ -26,7 +27,7 @@ USE_TOOLS=		gmake pax
 SUBST_CLASSES+=		path
 SUBST_MESSAGE.path=	Convert mule LIBDIR path
 SUBST_STAGE.path=	pre-configure
-SUBST_VARS.path=	PREFIX VARBASE MULEVERSION
+SUBST_VARS.path=	PREFIX VARBASE EMACSVERSION
 SUBST_FILES.path=	Makefile src/paths.h-dist
 
 SUBST_CLASSES+=		pref
@@ -66,7 +67,7 @@ REPLACE_PERL=		etc/faq2texi.perl
 # build PATH in the dumped emacs may not be a problem
 CHECK_WRKREF_SKIP+=     bin/mule
 
-INSTALLATION_DIRS+=	bin ${PKGMANDIR}/man1 share/mule/${MULEVERSION}
+INSTALLATION_DIRS+=	bin ${PKGMANDIR}/man1 share/mule/${EMACSVERSION}
 MAKE_DIRS+=		${VARBASE}/lock ${VARBASE}/lock/mule
 MAKE_DIRS_PERMS+=	${VARBASE}/lock/mule \
 			${REAL_ROOT_USER} ${REAL_ROOT_GROUP} 1777
@@ -86,7 +87,7 @@ do-configure:
 do-install:
 	cd ${WRKSRC} && \
 		pax -rwpp -s '/.*\.orig//' etc info lisp \
-	${DESTDIR}${PREFIX}/share/mule/${MULEVERSION}
+	${DESTDIR}${PREFIX}/share/mule/${EMACSVERSION}
 	${INSTALL_PROGRAM} ${WRKSRC}/etc/ctags ${DESTDIR}${PREFIX}/bin
 	${INSTALL_PROGRAM} ${WRKSRC}/etc/emacsclient ${DESTDIR}${PREFIX}/bin
 	${INSTALL_PROGRAM} ${WRKSRC}/etc/etags ${DESTDIR}${PREFIX}/bin

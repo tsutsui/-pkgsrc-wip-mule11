@@ -9,7 +9,7 @@ $NetBSD$
  # This got changed in late 1991 to say /usr/local/lib/emacs,
  # but there was no explanation of why, so it seems better to keep this stable.
 -LIBDIR= /usr/local/mule
-+LIBDIR= /usr/local/share/mule/@MULEVERSION@
++LIBDIR= /usr/local/share/mule/@EMACSVERSION@
  BINDIR= /usr/local/bin
  MANDIR= /usr/local/man
  MAN1DIR= ${MANDIR}/man1
