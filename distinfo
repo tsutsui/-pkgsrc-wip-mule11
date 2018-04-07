@@ -1,8 +1,8 @@
 $NetBSD$
 
-SHA1 (mule1.1-netbsd-20170408.tar.gz) = acbebc11d2ca0bebace896a00eede78434d170b2
-RMD160 (mule1.1-netbsd-20170408.tar.gz) = 454b0fc2bd8b4b069e9a5ae54f870f64d904bb35
-SHA512 (mule1.1-netbsd-20170408.tar.gz) = 65163c22d3ae119a71aca14991dd9a1449b12baa946c95e7616c25fc753503475d59c3c955423e23569367be8c134cfd25eaec3a77de2fa9b9dfd0b24eea2b5d
-Size (mule1.1-netbsd-20170408.tar.gz) = 4246421 bytes
+SHA1 (mule1.1-netbsd-20180404.tar.gz) = 5c9434a788337fa99bf6371bc292a1032dfd5051
+RMD160 (mule1.1-netbsd-20180404.tar.gz) = d504ea6b60c0b9a15adb7654c598ab308cf09a14
+SHA512 (mule1.1-netbsd-20180404.tar.gz) = ad466a44f5b5cfc4e083130175c0aaeb8f1d372a7c53115e231bda0cd0277df3181c0dc734767bc591b26dc239f4f74644746a35dc8cead4d99287f32a080d35
+Size (mule1.1-netbsd-20180404.tar.gz) = 4246360 bytes
 SHA1 (patch-Makefile) = 6e5e66911cee8f8cb151b5cc6116d4400fae8788
 SHA1 (patch-src_paths.h-dist) = e8e4eff9b44d3703ccf35348ba3e8495007fc741
