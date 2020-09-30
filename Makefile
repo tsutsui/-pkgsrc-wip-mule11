@@ -2,7 +2,7 @@
 
 MULEVERSION=		1.1
 EMACSVERSION=		18.59
-SNAPSHOTDATE=		20181111
+SNAPSHOTDATE=		20200918
 DISTNAME=		${GITHUB_PROJECT}
 PKGNAME=		mule11-${MULEVERSION}pl${SNAPSHOTDATE}
 CATEGORIES=		editors
@@ -28,7 +28,7 @@ SUBST_CLASSES+=		path
 SUBST_MESSAGE.path=	Convert mule LIBDIR path
 SUBST_STAGE.path=	pre-configure
 SUBST_VARS.path=	PREFIX VARBASE EMACSVERSION
-SUBST_FILES.path=	Makefile src/paths.h-dist
+SUBST_FILES.path=	Makefile src/paths.h-dist src/mconfig.h-netbsd
 
 SUBST_CLASSES+=		pref
 SUBST_MESSAGE.pref=	Convert /usr/local to ${PREFIX}
@@ -52,8 +52,6 @@ SUBST_FILES.pref=	\
 	man/emacs.texi \
 	src/m-ibmps2-aix.h \
 	src/mconfig.h-dist \
-	src/mconfig.h-netbsd \
-	src/paths.h-dist \
 	src/ymakefile
 
 SUBST_CLASSES+=		x11
